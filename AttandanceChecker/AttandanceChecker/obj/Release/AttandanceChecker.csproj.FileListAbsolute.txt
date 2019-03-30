@@ -1,0 +1,12 @@
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\bin\Release\AttandanceChecker.exe.config
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\bin\Release\AttandanceChecker.exe
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\bin\Release\AttandanceChecker.pdb
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.csprojAssemblyReference.cache
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.Form1.resources
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.Properties.Resources.resources
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.csproj.GenerateResource.cache
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.csproj.CoreCompileInputs.cache
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.exe
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.pdb
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\bin\Release\InTheHand.Net.Personal.xml
+C:\Users\Петров Андрей\source\repos\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.csproj.CopyComplete
