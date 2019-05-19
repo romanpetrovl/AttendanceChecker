@@ -22,3 +22,5 @@ C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\Attandance
 C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\bin\Release\AttandanceChecker.pdb
 C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\bin\Release\InTheHand.Net.Personal.xml
 C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.csproj.CopyComplete
+C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.RegistrationForm.resources
+C:\Users\user\source\repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Release\AttandanceChecker.RegistredUsers.resources

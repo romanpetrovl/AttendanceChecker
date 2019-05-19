@@ -15,10 +15,13 @@ using System.Text.RegularExpressions;
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 
+
 namespace AttandanceChecker
 {
     public partial class Form1 : Form
     {
+        List<Clients> RegisterClients = new List<Clients>();
+        List<BluetoothDeviceInfo> ThreadList = new List<BluetoothDeviceInfo>();
         List<BluetoothDeviceInfo> AvailableDevicesList = new List<BluetoothDeviceInfo>();
         public delegate void UpdateDiscoverBox(List<BluetoothDeviceInfo> list);
         public delegate void AddListItem();
@@ -37,8 +40,6 @@ namespace AttandanceChecker
             
             this.Cursor = Cursors.WaitCursor;
             button1.Enabled = false;
-
-
         }
 
         public void UpdateGUI()
@@ -48,8 +49,28 @@ namespace AttandanceChecker
 
             foreach (BluetoothDeviceInfo device in AvailableDevicesList)
             {
-                listBox1.Items.Add(device.DeviceName);
+                bool bFound = false;
+                string name = "test";
+                string surname = "test";
+                foreach (Clients client in RegisterClients)
+                {
+                    if (device.DeviceName == client.deviceName)
+                    { 
+                        bFound = true;
+                        name = client.clientName;
+                        surname = client.clientSurname;
+                    }
+                }
+                if (bFound)
+                    listBox2.Items.Add(name + " " + surname);
+                else
+                    listBox1.Items.Add(device.DeviceName);
             }
+        }
+
+        public void UpdateRegisterList(Clients client)
+        {
+            RegisterClients.Add(client);
         }
 
         public void FindBluetoothDevices()
@@ -58,12 +79,13 @@ namespace AttandanceChecker
             {
 
             bool find = false;
+            bool find2 = false;
             BluetoothClient bluc = new BluetoothClient();
             BluetoothDeviceInfo[] DevList = bluc.DiscoverDevices(4);
-            List<BluetoothDeviceInfo> copyDevicesList = AvailableDevicesList;
+            List<BluetoothDeviceInfo> copyDevicesList = ThreadList.GetRange(0, ThreadList.Count);
 
 
-            AvailableDevicesList.Clear();
+            ThreadList.Clear();
             //string maclist = "";
 
             /*StreamReader reader = new StreamReader("mac_list.txt");
@@ -80,19 +102,24 @@ namespace AttandanceChecker
 
             foreach (BluetoothDeviceInfo device in DevList)
             {
-                AvailableDevicesList.Add(device);
+                ThreadList.Add(device);
                 if (copyDevicesList.Count == 0)
                     find = true;
                 foreach (BluetoothDeviceInfo oldDevice in copyDevicesList)
                 {
-                    if (device != oldDevice)
-                        find = true;
-                }
+                    if (device.DeviceName == oldDevice.DeviceName)
+                        if (!find2)
+                            find2 = true;
+               }
             }
+            find = !find2;
 
             if (find)
             {
-                    if(this.IsHandleCreated)
+
+                    AvailableDevicesList = ThreadList.GetRange(0, ThreadList.Count);
+
+                    if (this.IsHandleCreated)
                         this.Invoke(myDelegate);
             }
 
@@ -100,8 +127,23 @@ namespace AttandanceChecker
 
         }
 
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string devName = listBox1.SelectedItem.ToString();
+            RegistrationForm regForm = new RegistrationForm(devName, this);
+            regForm.ShowDialog();
+        }
+
+        private void списокЗарегистрированныхПользователейToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RegistredUsers regListForm;
+            if (RegisterClients.Count == 0)
+                MessageBox.Show("Нет зарегестрированных пользователей");
+            else
+            { 
+                regListForm = new RegistredUsers(RegisterClients);
+                regListForm.ShowDialog();
+            }
 
         }
     }
