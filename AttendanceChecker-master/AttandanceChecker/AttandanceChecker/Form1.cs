@@ -14,7 +14,9 @@ using System.Text.RegularExpressions;
 
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
-
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Soap;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AttandanceChecker
 {
@@ -30,6 +32,25 @@ namespace AttandanceChecker
         public Form1()
         {
             InitializeComponent();
+
+            IFormatter formatter = new SoapFormatter();
+            Stream stream = new FileStream("Base.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
+            while (true)
+            {
+                try
+                {
+                    Clients read_client = (Clients)formatter.Deserialize(stream);
+                    if (read_client.deviceName == null) break;
+
+                    UpdateRegisterList(read_client);
+                }
+                catch (System.Xml.XmlException)
+                {
+                    break;
+                }
+            }
+            stream.Close();
+
             myDelegate = new AddListItem(UpdateGUI);
             Thread finderThread = new Thread(FindBluetoothDevices);
             finderThread.Start();

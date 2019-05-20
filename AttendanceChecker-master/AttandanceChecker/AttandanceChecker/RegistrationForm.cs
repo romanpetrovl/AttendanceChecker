@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Formatters.Soap;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,6 +31,12 @@ namespace AttandanceChecker
             new_client.clientName = textBox1.Text;
             new_client.clientSurname = textBox2.Text;
             new_client.deviceName = textBox3.Text;
+
+            IFormatter formatter = new SoapFormatter();
+            //IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream("Base.xml", FileMode.Append, FileAccess.Write, FileShare.None);
+            formatter.Serialize(stream, new_client);
+            stream.Close();
 
             pForm.UpdateRegisterList(new_client);
             this.Close();

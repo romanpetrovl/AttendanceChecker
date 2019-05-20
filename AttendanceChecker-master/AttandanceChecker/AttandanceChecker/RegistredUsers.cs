@@ -27,5 +27,10 @@ namespace AttandanceChecker
                 listView1.Items.Add(i.ToString()).SubItems.AddRange(info);
             }
         }
+
+        private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

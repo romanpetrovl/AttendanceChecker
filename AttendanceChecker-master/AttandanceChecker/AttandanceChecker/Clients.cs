@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace AttandanceChecker
 {
+    [Serializable]
     public class Clients
     {
 
