@@ -31,6 +31,9 @@ namespace AttandanceChecker
             new_client.clientName = textBox1.Text;
             new_client.clientSurname = textBox2.Text;
             new_client.deviceName = textBox3.Text;
+            new_client.clientAvtoName = textBox4.Text;
+            new_client.clientRegNumber = textBox5.Text;
+            new_client.clientDateBirth = dateTimePicker1.Value.ToString("dd-MM-yyyy");
 
             IFormatter formatter = new SoapFormatter();
             //IFormatter formatter = new BinaryFormatter();
@@ -39,6 +42,16 @@ namespace AttandanceChecker
             stream.Close();
 
             pForm.UpdateRegisterList(new_client);
+            this.Close();
+        }
+
+        private void Label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
             this.Close();
         }
     }

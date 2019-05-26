@@ -23,6 +23,7 @@ namespace AttandanceChecker
     public partial class Form1 : Form
     {
         List<Clients> RegisterClients = new List<Clients>();
+        List<Clients> ClientsOnStore = new List<Clients>();
         List<BluetoothDeviceInfo> ThreadList = new List<BluetoothDeviceInfo>();
         List<BluetoothDeviceInfo> AvailableDevicesList = new List<BluetoothDeviceInfo>();
         public delegate void UpdateDiscoverBox(List<BluetoothDeviceInfo> list);
@@ -33,27 +34,35 @@ namespace AttandanceChecker
         {
             InitializeComponent();
 
-            IFormatter formatter = new SoapFormatter();
-            Stream stream = new FileStream("Base.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
-            while (true)
+            try
             {
-                try
+                IFormatter formatter = new SoapFormatter();
+                Stream stream = new FileStream("Base.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
+                while (true)
                 {
-                    Clients read_client = (Clients)formatter.Deserialize(stream);
-                    if (read_client.deviceName == null) break;
+                    try
+                    {
+                        Clients read_client = (Clients)formatter.Deserialize(stream);
+                        if (read_client.deviceName == null) break;
 
-                    UpdateRegisterList(read_client);
+                        UpdateRegisterList(read_client);
+                    }
+                    catch (System.Xml.XmlException)
+                    {
+                        break;
+                    }
                 }
-                catch (System.Xml.XmlException)
-                {
-                    break;
-                }
+                stream.Close();
             }
-            stream.Close();
-
+            catch (FileNotFoundException ioEx)
+            {
+                Console.WriteLine(ioEx.Message);
+            }
             myDelegate = new AddListItem(UpdateGUI);
             Thread finderThread = new Thread(FindBluetoothDevices);
             finderThread.Start();
+            
+           
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -66,13 +75,14 @@ namespace AttandanceChecker
         public void UpdateGUI()
         {
             listBox1.Items.Clear();
-            listBox2.Items.Clear();
+            listView1.Items.Clear();
 
             foreach (BluetoothDeviceInfo device in AvailableDevicesList)
             {
                 bool bFound = false;
                 string name = "test";
                 string surname = "test";
+                string regnumber = "test";
                 foreach (Clients client in RegisterClients)
                 {
                     if (device.DeviceName == client.deviceName)
@@ -80,10 +90,15 @@ namespace AttandanceChecker
                         bFound = true;
                         name = client.clientName;
                         surname = client.clientSurname;
+                        regnumber = client.clientRegNumber;
                     }
                 }
                 if (bFound)
-                    listBox2.Items.Add(name + " " + surname);
+                //listBox2.Items.Add(name + " " + surname);
+                {
+                    ListViewItem item = new ListViewItem(new string[] { device.DeviceName, surname, name, regnumber });
+                    listView1.Items.Add(item);
+                }
                 else
                     listBox1.Items.Add(device.DeviceName);
             }
@@ -143,12 +158,16 @@ namespace AttandanceChecker
                     if (this.IsHandleCreated)
                         this.Invoke(myDelegate);
             }
-
             }
-
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        /*private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string devName = listBox1.SelectedItem.ToString();
+            RegistrationForm regForm = new RegistrationForm(devName, this);
+            regForm.ShowDialog();
+        }*/
+        private void listBox1_DoubleClick(object sender, EventArgs e)
         {
             string devName = listBox1.SelectedItem.ToString();
             RegistrationForm regForm = new RegistrationForm(devName, this);
@@ -165,6 +184,31 @@ namespace AttandanceChecker
                 regListForm = new RegistredUsers(RegisterClients);
                 regListForm.ShowDialog();
             }
+
+        }
+
+        private void ToolTip1_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem != null)
+            {
+                string devName = listBox1.SelectedItem.ToString();
+                RegistrationForm regForm = new RegistrationForm(devName, this);
+                regForm.ShowDialog();
+            }
+        }
+
+        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ListView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
     }

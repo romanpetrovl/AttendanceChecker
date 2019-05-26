@@ -13,12 +13,18 @@ namespace AttandanceChecker
         public string deviceName { get; set; }
         public string clientName { get; set; }
         public string clientSurname { get; set; }
+        public string clientAvtoName { get; set; }
+        public string clientRegNumber { get; set; }
+        public string clientDateBirth { get; set; }
 
         public Clients()
         {
             deviceName = "";
             clientName = "";
             clientSurname = "";
+            clientAvtoName = "";
+            clientRegNumber = "";
+            clientDateBirth = "";
         }
     }
 }
