@@ -104,9 +104,40 @@ namespace AttandanceChecker
             }
         }
 
+        public void UpdateBase()
+        {
+            IFormatter formatter = new SoapFormatter();
+            //IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream("Base.xml", FileMode.Create, FileAccess.Write, FileShare.None);
+            foreach (Clients client in RegisterClients)
+                formatter.Serialize(stream, client);
+            stream.Close();
+        }
+
         public void UpdateRegisterList(Clients client)
         {
             RegisterClients.Add(client);
+            UpdateGUI();
+        }
+
+        public void UpdateRegisterClient(Clients update_client)
+        {
+            Clients clientInList = RegisterClients.Find(item => item.deviceName == update_client.deviceName);
+            RegisterClients.Remove(clientInList);
+            RegisterClients.Add(update_client);
+
+            UpdateBase();
+            UpdateGUI();
+            MessageBox.Show("Изменения сохранены", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public void DeleteRegisterClientList(Clients delete_client)
+        {
+            Clients clientInList = RegisterClients.Find(item => item.deviceName == delete_client.deviceName);
+            RegisterClients.Remove(clientInList);
+            UpdateBase();
+            UpdateGUI();
+            MessageBox.Show("Клиента удален из базы", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public void FindBluetoothDevices()
@@ -174,6 +205,18 @@ namespace AttandanceChecker
             regForm.ShowDialog();
         }
 
+        private void listView1_DoubleClick(object sender, EventArgs e)
+        {
+            string devName = listView1.SelectedItems[0].Text;
+            foreach (Clients client in RegisterClients)
+                if (client.deviceName == devName)
+                {
+                    ChangeUserForm userForm = new ChangeUserForm(client, this);
+                    userForm.ShowDialog();
+                    break;
+                }
+        }
+
         private void списокЗарегистрированныхПользователейToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RegistredUsers regListForm;
@@ -200,11 +243,6 @@ namespace AttandanceChecker
                 RegistrationForm regForm = new RegistrationForm(devName, this);
                 regForm.ShowDialog();
             }
-        }
-
-        private void ListBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void ListView1_SelectedIndexChanged(object sender, EventArgs e)

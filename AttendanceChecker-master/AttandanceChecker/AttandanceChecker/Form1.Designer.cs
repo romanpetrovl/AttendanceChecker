@@ -205,11 +205,13 @@
             // 
             // listView1
             // 
+            this.listView1.Activation = System.Windows.Forms.ItemActivation.TwoClick;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
+            this.listView1.FullRowSelect = true;
             this.listView1.Location = new System.Drawing.Point(29, 78);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(458, 225);
@@ -217,6 +219,7 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.ListView1_SelectedIndexChanged);
+            this.listView1.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
             // 
             // columnHeader1
             // 
@@ -246,6 +249,7 @@
             this.columnHeader7,
             this.columnHeader8,
             this.columnHeader9});
+            this.listView2.FullRowSelect = true;
             this.listView2.Location = new System.Drawing.Point(29, 352);
             this.listView2.Name = "listView2";
             this.listView2.Size = new System.Drawing.Size(1029, 190);

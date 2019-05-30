@@ -41,3 +41,4 @@ D:\Repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Debug\
 D:\Repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Debug\AttandanceChecker.csproj.CopyComplete
 D:\Repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Debug\AttandanceChecker.exe
 D:\Repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Debug\AttandanceChecker.pdb
+D:\Repos\AttendanceChecker-master\AttandanceChecker\AttandanceChecker\obj\Debug\AttandanceChecker.ChangeUserForm.resources

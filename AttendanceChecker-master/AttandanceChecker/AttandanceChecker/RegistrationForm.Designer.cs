@@ -83,12 +83,12 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(22, 250);
+            this.label3.Location = new System.Drawing.Point(21, 250);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(92, 17);
+            this.label3.Size = new System.Drawing.Size(113, 17);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Device Name";
+            this.label3.Text = "Имя устройства";
             // 
             // textBox3
             // 
@@ -144,7 +144,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(22, 170);
+            this.label5.Location = new System.Drawing.Point(21, 170);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(84, 17);
             this.label5.TabIndex = 10;
