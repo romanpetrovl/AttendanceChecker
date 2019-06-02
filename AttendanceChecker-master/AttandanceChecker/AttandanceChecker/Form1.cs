@@ -11,7 +11,6 @@ using System.Threading;
 
 using System.IO;
 using System.Text.RegularExpressions;
-
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 using System.Runtime.Serialization;
@@ -23,17 +22,20 @@ namespace AttandanceChecker
     public partial class Form1 : Form
     {
         List<Clients> RegisterClients = new List<Clients>();
-        List<Clients> ClientsOnStore = new List<Clients>();
+        List<ClientsStock> ClientsOnStock = new List<ClientsStock>();
         List<BluetoothDeviceInfo> ThreadList = new List<BluetoothDeviceInfo>();
         List<BluetoothDeviceInfo> AvailableDevicesList = new List<BluetoothDeviceInfo>();
         public delegate void UpdateDiscoverBox(List<BluetoothDeviceInfo> list);
         public delegate void AddListItem();
         public AddListItem myDelegate;
+        Thread finderThread;
 
         public Form1()
         {
             InitializeComponent();
-
+            myDelegate = new AddListItem(UpdateGUI);
+            finderThread = new Thread(FindBluetoothDevices);
+            finderThread.Start();
             try
             {
                 IFormatter formatter = new SoapFormatter();
@@ -45,7 +47,7 @@ namespace AttandanceChecker
                         Clients read_client = (Clients)formatter.Deserialize(stream);
                         if (read_client.deviceName == null) break;
 
-                        UpdateRegisterList(read_client);
+                        UpdateRegisterList(read_client, false);
                     }
                     catch (System.Xml.XmlException)
                     {
@@ -58,11 +60,7 @@ namespace AttandanceChecker
             {
                 Console.WriteLine(ioEx.Message);
             }
-            myDelegate = new AddListItem(UpdateGUI);
-            Thread finderThread = new Thread(FindBluetoothDevices);
-            finderThread.Start();
-            
-           
+       
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -74,34 +72,84 @@ namespace AttandanceChecker
 
         public void UpdateGUI()
         {
-            listBox1.Items.Clear();
-            listView1.Items.Clear();
+            finderThread.Suspend();
 
             foreach (BluetoothDeviceInfo device in AvailableDevicesList)
             {
                 bool bFound = false;
+                bool fg = false;
                 string name = "test";
                 string surname = "test";
                 string regnumber = "test";
-                foreach (Clients client in RegisterClients)
-                {
-                    if (device.DeviceName == client.deviceName)
-                    { 
+                ListViewItem item;
+
+                foreach (ClientsStock stock in ClientsOnStock)
+                { 
+                    if (device.DeviceName == stock.deviceName)
+                    {
                         bFound = true;
-                        name = client.clientName;
-                        surname = client.clientSurname;
-                        regnumber = client.clientRegNumber;
+                        regnumber = stock.clientRegNumber;
+                        foreach (ListViewItem itm in listView3.Items)
+                        {
+                            if (itm.Text == device.DeviceName)
+                            {
+                                listView3.Items.Remove(itm);
+                                fg = true;
+                            }
+                        }
+                        if (!fg)
+                            foreach (ListViewItem itm in listView1.Items)
+                            {
+                                if (itm.Text == device.DeviceName)
+                                    listView1.Items.Remove(itm);
+                            }
+                        ClientsOnStock.Remove(stock);
+                        break;
                     }
                 }
+
                 if (bFound)
-                //listBox2.Items.Add(name + " " + surname);
                 {
-                    ListViewItem item = new ListViewItem(new string[] { device.DeviceName, surname, name, regnumber });
-                    listView1.Items.Add(item);
+                    item = new ListViewItem(new string[] { device.DeviceName, regnumber, "Выезд", DateTime.Now.ToString() });
+                    listView2.Items.Insert(0, item);
                 }
                 else
-                    listBox1.Items.Add(device.DeviceName);
+                {
+                    foreach (Clients client in RegisterClients)
+                    {
+                        if (device.DeviceName == client.deviceName)
+                        {
+                            bFound = true;
+                            name = client.clientName;
+                            surname = client.clientSurname;
+                            regnumber = client.clientRegNumber;
+                        }
+                    }
+                    if (bFound)
+                    {
+                        item = new ListViewItem(new string[] { device.DeviceName, surname, name, regnumber });
+                        listView1.Items.Add(item);
+                    }
+                    else
+                    {
+                        NewClient actForm = new NewClient(device.DeviceName.ToString(), this);
+                        if (actForm.ShowDialog() == DialogResult.OK)
+                        {
+                            regnumber = actForm.TheValue;
+                            item = new ListViewItem(new string[] { device.DeviceName, regnumber });
+                            listView3.Items.Add(item);
+                        }
+                        regnumber = actForm.TheValue;
+                    }
+                    item = new ListViewItem(new string[] { device.DeviceName, regnumber, "Заезд", DateTime.Now.ToString() });
+                    listView2.Items.Insert(0, item);
+                    ClientsStock newStock = new ClientsStock();
+                    newStock.deviceName = device.DeviceName;
+                    newStock.clientRegNumber = regnumber;
+                    ClientsOnStock.Add(newStock);
+                }
             }
+            finderThread.Resume();
         }
 
         public void UpdateBase()
@@ -114,17 +162,31 @@ namespace AttandanceChecker
             stream.Close();
         }
 
-        public void UpdateRegisterList(Clients client)
+        public void UpdateRegisterList(Clients client, bool f)
         {
             RegisterClients.Add(client);
-            UpdateGUI();
+            if (f)
+            {
+                foreach (ListViewItem itm in listView1.Items)
+                {
+                    if (itm.Text == client.deviceName)
+                        listView3.Items.Remove(itm);
+                }
+                ListViewItem item = new ListViewItem(new string[] { client.deviceName, client.clientSurname, client.clientName, client.clientRegNumber });
+                listView1.Items.Add(item);
+                item = new ListViewItem(new string[] { client.deviceName, client.clientRegNumber, "Регистрация", DateTime.Now.ToString() });
+                listView2.Items.Insert(0, item);
+            }
         }
 
         public void UpdateRegisterClient(Clients update_client)
         {
-            Clients clientInList = RegisterClients.Find(item => item.deviceName == update_client.deviceName);
+            Clients clientInList = RegisterClients.Find(item2 => item2.deviceName == update_client.deviceName);
             RegisterClients.Remove(clientInList);
             RegisterClients.Add(update_client);
+
+            ListViewItem item = new ListViewItem(new string[] { update_client.deviceName, update_client.clientRegNumber, "Изменен", DateTime.Now.ToString() });
+            listView2.Items.Insert(0, item);
 
             UpdateBase();
             UpdateGUI();
@@ -133,8 +195,10 @@ namespace AttandanceChecker
 
         public void DeleteRegisterClientList(Clients delete_client)
         {
-            Clients clientInList = RegisterClients.Find(item => item.deviceName == delete_client.deviceName);
+            Clients clientInList = RegisterClients.Find(item2 => item2.deviceName == delete_client.deviceName);
             RegisterClients.Remove(clientInList);
+            ListViewItem item = new ListViewItem(new string[] { delete_client.deviceName, delete_client.clientRegNumber, "Удален", DateTime.Now.ToString() });
+            listView2.Items.Insert(0, item);
             UpdateBase();
             UpdateGUI();
             MessageBox.Show("Клиента удален из базы", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -145,10 +209,10 @@ namespace AttandanceChecker
             while(true)
             {
 
-            bool find = false;
+            // bool find = false;
             bool find2 = false;
             BluetoothClient bluc = new BluetoothClient();
-            BluetoothDeviceInfo[] DevList = bluc.DiscoverDevices(4);
+            BluetoothDeviceInfo[] DevList = bluc.DiscoverDevices(5);
             List<BluetoothDeviceInfo> copyDevicesList = ThreadList.GetRange(0, ThreadList.Count);
 
 
@@ -171,7 +235,7 @@ namespace AttandanceChecker
             {
                 ThreadList.Add(device);
                 if (copyDevicesList.Count == 0)
-                    find = true;
+                    find2 = true;
                 foreach (BluetoothDeviceInfo oldDevice in copyDevicesList)
                 {
                     if (device.DeviceName == oldDevice.DeviceName)
@@ -179,9 +243,9 @@ namespace AttandanceChecker
                             find2 = true;
                }
             }
-            find = !find2;
+            //find = !find2;
 
-            if (find)
+            if (find2)
             {
 
                     AvailableDevicesList = ThreadList.GetRange(0, ThreadList.Count);
@@ -192,17 +256,17 @@ namespace AttandanceChecker
             }
         }
 
-        /*private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void listView3_DoubleClick(object sender, EventArgs e)
         {
-            string devName = listBox1.SelectedItem.ToString();
+            string devName = listView3.SelectedItems[0].Text;
             RegistrationForm regForm = new RegistrationForm(devName, this);
             regForm.ShowDialog();
-        }*/
-        private void listBox1_DoubleClick(object sender, EventArgs e)
+        }
+        private void listView3_Click(object sender, EventArgs e)
         {
-            string devName = listBox1.SelectedItem.ToString();
-            RegistrationForm regForm = new RegistrationForm(devName, this);
-            regForm.ShowDialog();
+            if (listView3.SelectedItems.Count == 0)
+                button2.Enabled = false;
+            else button2.Enabled = true;
         }
 
         private void listView1_DoubleClick(object sender, EventArgs e)
@@ -237,9 +301,9 @@ namespace AttandanceChecker
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null)
+            if (listView3.SelectedItems.Count > 0)
             {
-                string devName = listBox1.SelectedItem.ToString();
+                string devName = listView3.SelectedItems[0].Text;
                 RegistrationForm regForm = new RegistrationForm(devName, this);
                 regForm.ShowDialog();
             }
@@ -249,5 +313,7 @@ namespace AttandanceChecker
         {
 
         }
+
+
     }
 }

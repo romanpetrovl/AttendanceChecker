@@ -27,4 +27,13 @@ namespace AttandanceChecker
             clientDateBirth = "";
         }
     }
+
+    public class ClientsStock : Clients
+    {
+        public ClientsStock()
+        {
+            deviceName = "";
+            clientRegNumber = "";
+        }
+    }
 }

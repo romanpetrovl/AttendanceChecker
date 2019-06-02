@@ -25,6 +25,16 @@ namespace AttandanceChecker
             
         }
 
+        public RegistrationForm(string devName, string regnumber, Form1 parentForm)
+        {
+            InitializeComponent();
+            textBox3.Text = devName;
+            textBox5.Enabled = false;
+            textBox5.Text = regnumber;
+            pForm = parentForm;
+
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             Clients new_client = new Clients();
@@ -41,7 +51,7 @@ namespace AttandanceChecker
             formatter.Serialize(stream, new_client);
             stream.Close();
 
-            pForm.UpdateRegisterList(new_client);
+            pForm.UpdateRegisterList(new_client, true);
             this.Close();
         }
 
